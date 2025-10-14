@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:smart_life_assistant/data/core/dio_util.dart';
 
 class TikTokFunction {
-  static const String _tag = "TikTokFunction";
+  static const String tag = "TikTokFunction";
 
   static final TikTokFunction _instance = TikTokFunction._();
 
@@ -26,8 +26,8 @@ class TikTokFunction {
           },
         },
         "required": ["shareText"],
-      }
-    }
+      },
+    },
   ];
 
   // 请求头定义

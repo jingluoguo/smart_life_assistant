@@ -5,8 +5,6 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:smart_life_assistant/data/core/dio_util.dart';
 
 class WeatherFunction {
-  static const String _tag = "WeatherFunction";
-
   static final WeatherFunction _instance = WeatherFunction._();
 
   WeatherFunction._();
