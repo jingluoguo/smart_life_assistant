@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:smart_life_assistant/config/app_config.dart';
 import 'package:smart_life_assistant/data/core/dio_util.dart';
 
 class TikTokFunction {
@@ -30,12 +31,6 @@ class TikTokFunction {
     },
   ];
 
-  // 请求头定义
-  final headers = {
-    'User-Agent':
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
-  };
-
   Future<Map<String, String>> parseTiktokShareUrl(String shareText) async {
     // 从分享文本中提取无水印视频链接
     final urlRegex = RegExp(
@@ -51,17 +46,20 @@ class TikTokFunction {
     var shareUrl = urls[0]!;
     var shareResponse = await DioUtil.getInstance().get(
       shareUrl,
-      headers: headers,
+      headers: AppConfig.mobileHeaders,
     );
     final redirectedUrl = shareResponse.realUri.toString();
     final videoId = redirectedUrl
         .split('?')[0]
         .split('/')
         .lastWhere((part) => part.isNotEmpty);
-    shareUrl = 'https://www.iesdouyin.com/share/video/$videoId';
+    shareUrl = '${AppConfig.tiktokShareDomain}$videoId';
 
     // 获取视频页面内容
-    final response = await http.get(Uri.parse(shareUrl), headers: headers);
+    final response = await http.get(
+      Uri.parse(shareUrl),
+      headers: AppConfig.mobileHeaders,
+    );
     if (response.statusCode != 200) {
       return {'error': '请求失败: ${response.statusCode}'};
     }

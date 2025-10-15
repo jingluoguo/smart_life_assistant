@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:smart_life_assistant/config/app_config.dart';
 import 'package:smart_life_assistant/data/core/dio_util.dart';
 
 class WeatherFunction {
@@ -71,31 +72,22 @@ class WeatherFunction {
     },
   ];
 
-  final String _qWeatherApiHost = 'mu52q4jwqd.re.qweatherapi.com';
-  final String _qWeatherProjectId = '4DKTM9MVMQ';
-  final String _qWeatherCredentialId = 'T6WKR4U3MQ';
-  final String _qWeatherPrivateKey = '''
------BEGIN PRIVATE KEY-----
-MC4CAQAwBQYDK2VwBCIEINiaaMH4nmvI2Xe7tNUz8814vofZ2c/nq8oRstRFmF8k
------END PRIVATE KEY-----
-    ''';
-
   String get getJWTToken {
     var header = base64UrlEncode(
       utf8.encode(
-        "{\"alg\":\"EdDSA\",\"kid\":\"$_qWeatherCredentialId\",\"typ\":\"JWT\"}",
+        "{\"alg\":\"EdDSA\",\"kid\":\"${AppConfig.qWeatherCredentialId}\",\"typ\":\"JWT\"}",
       ),
     ).replaceAll('=', '');
     var payload = base64UrlEncode(
       utf8.encode(
-        "{\"iat\":${DateTime.now().millisecondsSinceEpoch ~/ 1000},\"exp\":${DateTime.now().millisecondsSinceEpoch ~/ 1000 + 60 * 60 * 24},\"sub\":\"$_qWeatherProjectId\"}",
+        "{\"iat\":${DateTime.now().millisecondsSinceEpoch ~/ 1000},\"exp\":${DateTime.now().millisecondsSinceEpoch ~/ 1000 + 60 * 60 * 24},\"sub\":\"${AppConfig.qWeatherProjectId}\"}",
       ),
     ).replaceAll('=', '');
 
     var key1 = '$header.$payload';
     var signature = base64UrlEncode(
       JWTAlgorithm.EdDSA.sign(
-        EdDSAPrivateKey.fromPEM(_qWeatherPrivateKey),
+        EdDSAPrivateKey.fromPEM(AppConfig.qWeatherPrivateKey),
         Uint8List.fromList(utf8.encode(key1)),
       ),
     ).replaceAll('=', '');
@@ -107,7 +99,7 @@ MC4CAQAwBQYDK2VwBCIEINiaaMH4nmvI2Xe7tNUz8814vofZ2c/nq8oRstRFmF8k
   Future<String> getRealTimeWeatherInfo(String lng, String lat) async {
     try {
       Response response = await DioUtil.getInstance().get(
-        'https://$_qWeatherApiHost/v7/weather/now?location=$lng,$lat',
+        'https://${AppConfig.qWeatherApiHost}/v7/weather/now?location=$lng,$lat',
         headers: {'Authorization': 'Bearer $getJWTToken'},
       );
       // 获取天气信息
@@ -125,7 +117,7 @@ MC4CAQAwBQYDK2VwBCIEINiaaMH4nmvI2Xe7tNUz8814vofZ2c/nq8oRstRFmF8k
   ) async {
     try {
       Response response = await DioUtil.getInstance().get(
-        'https://$_qWeatherApiHost/v7/weather/$hours?location=$lng,$lat',
+        'https://${AppConfig.qWeatherApiHost}/v7/weather/$hours?location=$lng,$lat',
         headers: {'Authorization': 'Bearer $getJWTToken'},
       );
       // 获取天气信息
@@ -143,7 +135,7 @@ MC4CAQAwBQYDK2VwBCIEINiaaMH4nmvI2Xe7tNUz8814vofZ2c/nq8oRstRFmF8k
   ) async {
     try {
       Response response = await DioUtil.getInstance().get(
-        'https://$_qWeatherApiHost/v7/weather/$days?location=$lng,$lat',
+        'https://${AppConfig.qWeatherApiHost}/v7/weather/$days?location=$lng,$lat',
         headers: {'Authorization': 'Bearer $getJWTToken'},
       );
       // 获取天气信息

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:smart_life_assistant/config/app_config.dart';
 import 'package:smart_life_assistant/data/function_calling/tiktok_function.dart';
 import 'package:smart_life_assistant/data/function_calling/weather_function.dart';
 
@@ -20,12 +21,21 @@ class FunctionCallService {
     ...TikTokFunction.getInstance().tiktokTools,
   ];
 
-  final apiUrl =
-      "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
-  final apiKey = "sk-9a65c355846e407292f7fcd77220b6d7";
-  final model = "qwen3-max";
-
   final Dio _dio = Dio();
+
+  Future<Response> _commonDashScopeApiCall(List<dynamic> messages) async {
+    return await _dio.post(
+      AppConfig.dashScopeApiUrl,
+      data: {
+        'model': AppConfig.dashScopeModel,
+        'messages': messages,
+        'tools': tools,
+      },
+      options: Options(
+        headers: {'Authorization': 'Bearer ${AppConfig.dashScopeApiKey}'},
+      ),
+    );
+  }
 
   void handleFunctionCall({required String text}) async {
     var messages = [];
@@ -36,11 +46,7 @@ class FunctionCallService {
     messages.add({"role": "user", "content": text});
 
     debugPrint('$_tag 开始调用模型');
-    Response response = await _dio.post(
-      apiUrl,
-      data: {'model': model, 'messages': messages, 'tools': tools},
-      options: Options(headers: {'Authorization': 'Bearer $apiKey'}),
-    );
+    Response response = await _commonDashScopeApiCall(messages);
     debugPrint('$_tag 第一次调用模型的请求参数：$messages');
     debugPrint('$_tag 第一次调用模型的回答结果：${response.data['choices'][0]['message']}');
     messages.add(response.data['choices'][0]['message']);
@@ -66,11 +72,7 @@ class FunctionCallService {
         args['lat'],
       );
       messages.add({'role': 'tool', 'content': content});
-      response = await _dio.post(
-        apiUrl,
-        data: {'model': model, 'messages': messages, 'tools': tools},
-        options: Options(headers: {'Authorization': 'Bearer $apiKey'}),
-      );
+      response = await _commonDashScopeApiCall(messages);
     } else if (callName == 'getNextHoursWeatherInfo') {
       var arguments = toolCall['arguments'];
       var args = jsonDecode(arguments);
@@ -80,11 +82,7 @@ class FunctionCallService {
         args['hours'],
       );
       messages.add({'role': 'tool', 'content': content});
-      response = await _dio.post(
-        apiUrl,
-        data: {'model': model, 'messages': messages, 'tools': tools},
-        options: Options(headers: {'Authorization': 'Bearer $apiKey'}),
-      );
+      response = await _commonDashScopeApiCall(messages);
     } else if (callName == 'getEveryDayWeatherInfo') {
       var arguments = toolCall['arguments'];
       var args = jsonDecode(arguments);
@@ -94,23 +92,15 @@ class FunctionCallService {
         args['days'],
       );
       messages.add({'role': 'tool', 'content': content});
-      response = await _dio.post(
-        apiUrl,
-        data: {'model': model, 'messages': messages, 'tools': tools},
-        options: Options(headers: {'Authorization': 'Bearer $apiKey'}),
-      );
+      response = await _commonDashScopeApiCall(messages);
     } else if (callName == 'parseTiktokShareUrl') {
       var arguments = toolCall['arguments'];
       var args = jsonDecode(arguments);
       var content = await TikTokFunction.getInstance().parseTiktokShareUrl(
-        args['shareText']
+        args['shareText'],
       );
       messages.add({'role': 'tool', 'content': content.toString()});
-      response = await _dio.post(
-        apiUrl,
-        data: {'model': model, 'messages': messages, 'tools': tools},
-        options: Options(headers: {'Authorization': 'Bearer $apiKey'}),
-      );
+      response = await _commonDashScopeApiCall(messages);
     }
     debugPrint('$_tag 第二次调用模型的请求参数：$messages');
     debugPrint('$_tag 第二次调用模型的回答结果：${response?.data['choices'][0]['message']}');
