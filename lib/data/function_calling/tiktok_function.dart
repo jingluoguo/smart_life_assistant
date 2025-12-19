@@ -3,6 +3,24 @@ import 'package:http/http.dart' as http;
 import 'package:smart_life_assistant/config/app_config.dart';
 import 'package:smart_life_assistant/data/core/dio_util.dart';
 
+/// 抖音功能模块
+///
+/// 提供抖音分享链接解析功能，能够从用户分享的文本中提取无水印视频链接。
+/// 支持通过 Function Calling 机制与 AI 模型交互，实现自然语言驱动的视频解析。
+///
+/// 主要功能：
+/// - 解析抖音分享文本中的链接
+/// - 获取视频的真实无水印下载地址
+/// - 提取视频标题、ID 等元信息
+/// - 支持图集类型内容解析
+///
+/// 使用示例：
+/// ```dart
+/// final result = await TikTokFunction.getInstance().parseTiktokShareUrl(
+///   '分享文本内容包含链接 https://v.douyin.com/xxx',
+/// );
+/// print(result['url']); // 无水印视频链接
+/// ```
 class TikTokFunction {
   static const String tag = "TikTokFunction";
 
