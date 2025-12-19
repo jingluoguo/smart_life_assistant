@@ -37,7 +37,7 @@ class FunctionCallService {
     );
   }
 
-  void handleFunctionCall({required String text}) async {
+  Future<String> handleFunctionCall({required String text}) async {
     var messages = [];
     messages.add({
       'role': "system",
@@ -52,18 +52,20 @@ class FunctionCallService {
     messages.add(response.data['choices'][0]['message']);
     var toolCalls = response.data['choices'][0]['message']['tool_calls'];
     if (toolCalls != null && toolCalls.length > 0) {
-      parseFunctionCall(
+      return await parseFunctionCall(
         response.data['choices'][0]['message']['tool_calls'][0]['function'],
         messages,
       );
     } else {
       debugPrint('$_tag 没合适的处理方法：${response.data}');
+      return '没有找到合适的处理方法';
     }
   }
 
-  void parseFunctionCall(Map toolCall, List messages) async {
+  Future<String> parseFunctionCall(Map toolCall, List messages) async {
     var callName = toolCall['name'];
     Response? response;
+    String result = '';
     if (callName == 'getRealTimeWeatherInfo') {
       var arguments = toolCall['arguments'];
       var args = jsonDecode(arguments);
@@ -73,6 +75,7 @@ class FunctionCallService {
       );
       messages.add({'role': 'tool', 'content': content});
       response = await _commonDashScopeApiCall(messages);
+      result = response.data['choices'][0]['message']['content'];
     } else if (callName == 'getNextHoursWeatherInfo') {
       var arguments = toolCall['arguments'];
       var args = jsonDecode(arguments);
@@ -83,6 +86,7 @@ class FunctionCallService {
       );
       messages.add({'role': 'tool', 'content': content});
       response = await _commonDashScopeApiCall(messages);
+      result = response.data['choices'][0]['message']['content'];
     } else if (callName == 'getEveryDayWeatherInfo') {
       var arguments = toolCall['arguments'];
       var args = jsonDecode(arguments);
@@ -93,6 +97,7 @@ class FunctionCallService {
       );
       messages.add({'role': 'tool', 'content': content});
       response = await _commonDashScopeApiCall(messages);
+      result = response.data['choices'][0]['message']['content'];
     } else if (callName == 'parseTiktokShareUrl') {
       var arguments = toolCall['arguments'];
       var args = jsonDecode(arguments);
@@ -101,8 +106,10 @@ class FunctionCallService {
       );
       messages.add({'role': 'tool', 'content': content.toString()});
       response = await _commonDashScopeApiCall(messages);
+      result = response.data['choices'][0]['message']['content'];
     }
     debugPrint('$_tag 第二次调用模型的请求参数：$messages');
     debugPrint('$_tag 第二次调用模型的回答结果：${response?.data['choices'][0]['message']}');
+    return result;
   }
 }
