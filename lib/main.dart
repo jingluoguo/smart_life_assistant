@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:smart_life_assistant/data/service/function_call_service.dart';
@@ -40,12 +41,56 @@ class SmartLifeAssistantHome extends StatefulWidget {
   State<SmartLifeAssistantHome> createState() => _SmartLifeAssistantHomeState();
 }
 
-class _SmartLifeAssistantHomeState extends State<SmartLifeAssistantHome> {
+class _SmartLifeAssistantHomeState extends State<SmartLifeAssistantHome>
+    with WidgetsBindingObserver {
   final TextEditingController _inputController = TextEditingController();
   final FunctionCallService _functionCallService =
       FunctionCallService.getInstance();
   bool _isLoading = false;
   String _result = '';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // 初始化时也检查一次剪贴板
+    _checkClipboard();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _inputController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // 应用恢复到前台时检查剪贴板
+      _checkClipboard();
+    }
+  }
+
+  Future<void> _checkClipboard() async {
+    try {
+      final ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
+      if (data != null && data.text != null) {
+        final String clipboardText = data.text!;
+        // 检查是否包含抖音链接
+        if (clipboardText.contains('v.douyin.com')) {
+          setState(() {
+            _inputController.text = clipboardText;
+          });
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('读取剪贴板失败: $e');
+      }
+    }
+  }
 
   Future<void> _launchUrl(String url) async {
     final Uri uri = Uri.parse(url);
