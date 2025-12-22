@@ -7,6 +7,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_i18n/loaders/decoders/json_decode_strategy.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:smart_life_assistant/core/ext/widget_ext.dart';
 import 'package:smart_life_assistant/core/utils/common_util.dart';
 import 'package:smart_life_assistant/pages/assistant/assistant_binding.dart';
 import 'package:smart_life_assistant/pages/assistant/assistant_page.dart';
@@ -58,6 +59,8 @@ class MyApp extends StatelessWidget {
       initialRoute: AppRoutes.assistant,
       defaultTransition: Transition.cupertino,
       getPages: AppPages.pages,
-    );
+    ).onTap(() {
+      FocusManager.instance.primaryFocus?.unfocus();
+    });
   }
 }
