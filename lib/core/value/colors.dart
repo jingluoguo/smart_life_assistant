@@ -3,27 +3,22 @@ import 'package:get/get.dart';
 import 'package:smart_life_assistant/core/controller/theme_controller.dart';
 import 'package:smart_life_assistant/core/value/theme_model.dart';
 
+// 主题颜色提供者类，用于获取当前主题的颜色
 class AppColors {
-  // 获取主题控制器
-  static ThemeController get _themeController => Get.find<ThemeController>();
-
-  // 获取当前主题
-  static ThemeModel get _currentTheme => _themeController.currentTheme;
-
   // 主色调
-  static Color get primary => _currentTheme.primary;
-  static Color get secondary => _currentTheme.secondary;
-  static Color get accent => _currentTheme.accent;
+  static Color get primary => _getTheme().primary;
+  static Color get secondary => _getTheme().secondary;
+  static Color get accent => _getTheme().accent;
 
   // 文本颜色
-  static Color get textPrimary => _currentTheme.textPrimary;
-  static Color get textSecondary => _currentTheme.textSecondary;
+  static Color get textPrimary => _getTheme().textPrimary;
+  static Color get textSecondary => _getTheme().textSecondary;
   static Color get textLight =>
-      _currentTheme.textSecondary.withValues(alpha: 0.8);
+      _getTheme().textSecondary.withValues(alpha: 0.8);
 
   // 背景颜色
-  static Color get background => _currentTheme.background;
-  static Color get backgroundSecondary => _currentTheme.backgroundSecondary;
+  static Color get background => _getTheme().background;
+  static Color get backgroundSecondary => _getTheme().backgroundSecondary;
 
   // 功能颜色
   static const success = Color(0xFF4CAF50); // 成功-绿色
@@ -37,4 +32,10 @@ class AppColors {
   static const grey = Color(0xFF9E9E9E);
   static const black = Color(0xFF000000);
   static const white = Color(0xFFFFFFFF);
+
+  // 获取当前主题（私有方法）
+  static ThemeModel _getTheme() {
+    final themeController = Get.find<ThemeController>();
+    return themeController.currentTheme;
+  }
 }

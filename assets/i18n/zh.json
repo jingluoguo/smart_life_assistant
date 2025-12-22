@@ -16,5 +16,22 @@
     "resultTitle": "处理结果",
     "loading": "正在处理...",
     "failed": "处理失败：{error}"
+  },
+  "settings": {
+      "title": "主题设置",
+      "selectTheme": "选择主题",
+      "preview": "主题预览",
+      "defaultTheme": "默认主题",
+      "defaultThemeDescription": "标准的紫色主题",
+      "darkTheme": "暗色主题",
+      "darkThemeDescription": "适合夜间使用的深色主题",
+      "blueTheme": "蓝色主题",
+      "blueThemeDescription": "清新的蓝色主题",
+      "primaryColor": "主色调",
+      "secondaryColor": "次色调",
+      "accentColor": "强调色",
+      "textColor": "文本",
+      "backgroundColor": "背景",
+      "secondaryBackgroundColor": "次背景"
   }
 }

@@ -36,7 +36,7 @@ class AssistantController extends GetxController with WidgetsBindingObserver {
     }
 
     isLoading.value = true;
-    result.value = FlutterI18n.translate(Get.context!, 'app.loading');
+    result.value = i18n('app.loading');
 
     try {
       final functionResult = await functionCallService.handleFunctionCall(

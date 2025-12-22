@@ -16,5 +16,23 @@
     "resultTitle": "Processing Result",
     "loading": "Processing...",
     "failed": "Processing failed: {error}"
+  },
+  "settings": {
+    "title": "Theme Settings",
+    "selectTheme": "Select Theme",
+    "preview": "Theme Preview",
+    "themePreview": "Theme Preview",
+    "defaultTheme": "Default Theme",
+    "defaultThemeDescription": "Standard purple theme",
+    "darkTheme": "Dark Theme",
+    "darkThemeDescription": "Dark theme suitable for night use",
+    "blueTheme": "Blue Theme",
+    "blueThemeDescription": "Fresh blue theme",
+    "primaryColor": "Primary Color",
+    "secondaryColor": "Secondary Color",
+    "accentColor": "Accent Color",
+    "textColor": "Text",
+    "backgroundColor": "Background",
+    "secondaryBackgroundColor": "Secondary Background"
   }
 }

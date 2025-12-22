@@ -4,10 +4,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
-import 'package:smart_life_assistant/core/controller/theme_controller.dart';
+import 'package:smart_life_assistant/core/utils/common_util.dart';
 import 'package:smart_life_assistant/core/value/colors.dart';
-import 'package:smart_life_assistant/core/value/theme_model.dart';
 import 'package:smart_life_assistant/pages/assistant/assistant_controller.dart';
+import 'package:smart_life_assistant/route/app_pages.dart';
 
 class AssistantPage extends StatelessWidget {
   AssistantPage({super.key});
@@ -55,44 +55,40 @@ class AssistantPage extends StatelessWidget {
     );
   }
 
-  Widget _buildThemeSelector() {
-    final themeController = Get.find<ThemeController>();
-    return Obx(
-      () => Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        children:
-            ThemeModel.allThemes.map((theme) {
-              final isSelected =
-                  themeController.currentTheme.name == theme.name;
-              return ElevatedButton.icon(
-                onPressed: () {
-                  themeController.switchTheme(theme.name);
-                },
-                icon: Icon(
-                  isSelected ? Icons.check_circle : Icons.circle_outlined,
-                  color: isSelected ? theme.primary : null,
-                ),
-                label: Text(
-                  theme.name == 'default'
-                      ? '默认'
-                      : theme.name == 'dark'
-                      ? '暗色'
-                      : theme.name,
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.background,
-                  foregroundColor: theme.textPrimary,
-                  side: BorderSide(
-                    color: theme.primary,
-                    width: isSelected ? 2 : 1,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              );
-            }).toList(),
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      backgroundColor: AppColors.background,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: AppColors.primary),
+            child: Text(
+              '菜单',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.color_lens),
+            title: Text('主题设置'),
+            onTap: () {
+              Navigator.pop(context);
+              Get.toNamed(AppRoutes.themeSettings);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: Text('关于应用'),
+            onTap: () {
+              Navigator.pop(context);
+              // 这里可以添加关于页面的导航
+            },
+          ),
+        ],
       ),
     );
   }
@@ -151,9 +147,18 @@ class AssistantPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        title: Text(FlutterI18n.translate(context, 'app.title')),
+        title: Text(i18n('app.title')),
         centerTitle: true,
+        leading: Builder(
+          builder: (ctx) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () => Scaffold.of(ctx).openDrawer(),
+            );
+          },
+        ),
       ),
+      drawer: _buildDrawer(context),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -168,7 +173,7 @@ class AssistantPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      FlutterI18n.translate(context, 'app.features'),
+                      i18n('app.features'),
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -177,34 +182,17 @@ class AssistantPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     _buildFeatureCard(
                       icon: Icons.cloud_outlined,
-                      title: FlutterI18n.translate(context, 'app.weather'),
-                      description: FlutterI18n.translate(
-                        context,
-                        'app.weatherDescription',
-                      ),
+                      title: i18n('app.weather'),
+                      description: i18n('app.weatherDescription'),
                       color: AppColors.blue,
                     ),
                     const SizedBox(height: 12),
                     _buildFeatureCard(
                       icon: Icons.video_library_outlined,
-                      title: FlutterI18n.translate(context, 'app.tiktok'),
-                      description: FlutterI18n.translate(
-                        context,
-                        'app.tiktokDescription',
-                      ),
+                      title: i18n('app.tiktok'),
+                      description: i18n('app.tiktokDescription'),
                       color: AppColors.pink,
                     ),
-                    const SizedBox(height: 20),
-                    // 主题切换部分
-                    Text(
-                      '选择主题',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildThemeSelector(),
                   ],
                 ),
               ),
@@ -214,7 +202,7 @@ class AssistantPage extends StatelessWidget {
             TextField(
               controller: controller.inputController,
               decoration: InputDecoration(
-                labelText: FlutterI18n.translate(context, 'app.inputLabel'),
+                labelText: i18n('app.inputLabel'),
                 border: const OutlineInputBorder(),
                 suffixIcon: Obx(
                   () =>
@@ -242,10 +230,7 @@ class AssistantPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  FlutterI18n.translate(
-                                    context,
-                                    'app.resultTitle',
-                                  ),
+                                  i18n('app.resultTitle'),
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
