@@ -1,7 +1,6 @@
 import 'dart:core';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -17,62 +16,13 @@ class AssistantController extends GetxController with WidgetsBindingObserver {
   RxBool isLoading = false.obs;
   RxString result = ''.obs;
 
-  Future<void> _launchUrl(String url) async {
+  Future<void> handleLaunchUrl(String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
       result.value = '无法打开链接: $url';
     }
-  }
-
-  List<TextSpan> parseTextWithUrls(String text) {
-    final RegExp urlRegex = RegExp(r'https?://[^\s\)]+');
-    final List<TextSpan> spans = [];
-    int lastIndex = 0;
-
-    urlRegex.allMatches(text).forEach((match) {
-      // 添加匹配前的文本
-      if (match.start > lastIndex) {
-        spans.add(
-          TextSpan(
-            text: text.substring(lastIndex, match.start),
-            style: const TextStyle(fontSize: 16, color: Colors.black),
-          ),
-        );
-      }
-
-      // 添加可点击的URL
-      spans.add(
-        TextSpan(
-          text: match.group(0)!, // 安全调用，因为是匹配项
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.blue,
-            decoration: TextDecoration.underline,
-          ),
-          recognizer:
-              TapGestureRecognizer()
-                ..onTap = () {
-                  _launchUrl(match.group(0)!); // 安全调用，因为是匹配项
-                },
-        ),
-      );
-
-      lastIndex = match.end;
-    });
-
-    // 添加剩余的文本
-    if (lastIndex < text.length) {
-      spans.add(
-        TextSpan(
-          text: text.substring(lastIndex),
-          style: const TextStyle(fontSize: 16, color: Colors.black),
-        ),
-      );
-    }
-
-    return spans;
   }
 
   void handleFunctionCall() async {

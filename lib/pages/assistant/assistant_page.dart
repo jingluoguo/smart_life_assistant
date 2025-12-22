@@ -1,8 +1,12 @@
 import 'dart:core';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
+import 'package:smart_life_assistant/core/controller/theme_controller.dart';
+import 'package:smart_life_assistant/core/value/colors.dart';
+import 'package:smart_life_assistant/core/value/theme_model.dart';
 import 'package:smart_life_assistant/pages/assistant/assistant_controller.dart';
 
 class AssistantPage extends StatelessWidget {
@@ -22,7 +26,7 @@ class AssistantPage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: .1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color, size: 32),
@@ -42,7 +46,7 @@ class AssistantPage extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 description,
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -51,11 +55,102 @@ class AssistantPage extends StatelessWidget {
     );
   }
 
+  Widget _buildThemeSelector() {
+    final themeController = Get.find<ThemeController>();
+    return Obx(
+      () => Wrap(
+        spacing: 12,
+        runSpacing: 12,
+        children:
+            ThemeModel.allThemes.map((theme) {
+              final isSelected =
+                  themeController.currentTheme.name == theme.name;
+              return ElevatedButton.icon(
+                onPressed: () {
+                  themeController.switchTheme(theme.name);
+                },
+                icon: Icon(
+                  isSelected ? Icons.check_circle : Icons.circle_outlined,
+                  color: isSelected ? theme.primary : null,
+                ),
+                label: Text(
+                  theme.name == 'default'
+                      ? '默认'
+                      : theme.name == 'dark'
+                      ? '暗色'
+                      : theme.name,
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.background,
+                  foregroundColor: theme.textPrimary,
+                  side: BorderSide(
+                    color: theme.primary,
+                    width: isSelected ? 2 : 1,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              );
+            }).toList(),
+      ),
+    );
+  }
+
+  List<TextSpan> parseTextWithUrls(String text) {
+    final RegExp urlRegex = RegExp(r'https?://[^\s\)]+');
+    final List<TextSpan> spans = [];
+    int lastIndex = 0;
+
+    urlRegex.allMatches(text).forEach((match) {
+      // 添加匹配前的文本
+      if (match.start > lastIndex) {
+        spans.add(
+          TextSpan(
+            text: text.substring(lastIndex, match.start),
+            style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+          ),
+        );
+      }
+
+      // 添加可点击的URL
+      spans.add(
+        TextSpan(
+          text: match.group(0)!, // 安全调用，因为是匹配项
+          style: const TextStyle(
+            fontSize: 16,
+            color: AppColors.blue,
+            decoration: TextDecoration.underline,
+          ),
+          recognizer:
+              TapGestureRecognizer()
+                ..onTap = () {
+                  controller.handleLaunchUrl(match.group(0)!); // 安全调用，因为是匹配项
+                },
+        ),
+      );
+
+      lastIndex = match.end;
+    });
+
+    // 添加剩余的文本
+    if (lastIndex < text.length) {
+      spans.add(
+        TextSpan(
+          text: text.substring(lastIndex),
+          style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+        ),
+      );
+    }
+
+    return spans;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: AppColors.background,
         title: Text(FlutterI18n.translate(context, 'app.title')),
         centerTitle: true,
       ),
@@ -87,7 +182,7 @@ class AssistantPage extends StatelessWidget {
                         context,
                         'app.weatherDescription',
                       ),
-                      color: Colors.blue,
+                      color: AppColors.blue,
                     ),
                     const SizedBox(height: 12),
                     _buildFeatureCard(
@@ -97,8 +192,19 @@ class AssistantPage extends StatelessWidget {
                         context,
                         'app.tiktokDescription',
                       ),
-                      color: Colors.pink,
+                      color: AppColors.pink,
                     ),
+                    const SizedBox(height: 20),
+                    // 主题切换部分
+                    Text(
+                      '选择主题',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildThemeSelector(),
                   ],
                 ),
               ),
@@ -150,7 +256,7 @@ class AssistantPage extends StatelessWidget {
                                   child: SingleChildScrollView(
                                     child: RichText(
                                       text: TextSpan(
-                                        children: controller.parseTextWithUrls(
+                                        children: parseTextWithUrls(
                                           controller.result.value,
                                         ),
                                       ),
