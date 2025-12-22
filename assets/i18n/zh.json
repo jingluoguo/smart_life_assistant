@@ -1,0 +1,20 @@
+{
+  "menu": {
+    "cut": "剪切",
+    "copy": "复制",
+    "paste": "粘贴",
+    "selectAll": "全选"
+  },
+  "app": {
+    "title": "智能生活助手",
+    "features": "可用功能",
+    "weather": "天气查询",
+    "weatherDescription": "根据经纬度查询实时天气、逐小时预报和每日预报",
+    "tiktok": "TikTok视频解析",
+    "tiktokDescription": "从抖音分享链接中提取无水印视频下载地址",
+    "inputLabel": "请输入查询内容或分享链接",
+    "resultTitle": "处理结果",
+    "loading": "正在处理...",
+    "failed": "处理失败：{error}"
+  }
+}

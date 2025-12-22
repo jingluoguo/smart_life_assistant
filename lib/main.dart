@@ -1,11 +1,16 @@
 import 'dart:async' as runtime;
 import 'dart:core';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:flutter_i18n/loaders/decoders/json_decode_strategy.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:smart_life_assistant/core/utils/common_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:smart_life_assistant/data/service/function_call_service.dart';
 
@@ -25,7 +30,30 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: '智能生活助手',
+      title: i18n('app.title'),
+      localizationsDelegates: [
+        FlutterI18nDelegate(
+          translationLoader: FileTranslationLoader(
+            basePath: 'assets/i18n',
+            useCountryCode: false,
+            decodeStrategies: [JsonDecodeStrategy()],
+          ),
+        ),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [Locale('en'), Locale('zh')],
+      localeResolutionCallback: (locale, supportedLocales) {
+        // 尝试匹配用户的首选语言
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale?.languageCode) {
+            return supportedLocale;
+          }
+        }
+        // 如果没有匹配的，使用默认语言
+        return supportedLocales.first;
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
@@ -165,7 +193,7 @@ class _SmartLifeAssistantHomeState extends State<SmartLifeAssistantHome>
 
     setState(() {
       _isLoading = true;
-      _result = '正在处理...';
+      _result = i18n('app.loading');
     });
 
     try {
@@ -177,7 +205,10 @@ class _SmartLifeAssistantHomeState extends State<SmartLifeAssistantHome>
       });
     } catch (e) {
       setState(() {
-        _result = '处理失败：$e';
+        _result = i18n(
+          'app.failed',
+          translationParams: {'error': e.toString()},
+        );
       });
     } finally {
       setState(() {
@@ -191,7 +222,7 @@ class _SmartLifeAssistantHomeState extends State<SmartLifeAssistantHome>
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('智能生活助手'),
+        title: Text(i18n('app.title')),
         centerTitle: true,
       ),
       body: Padding(
@@ -207,9 +238,9 @@ class _SmartLifeAssistantHomeState extends State<SmartLifeAssistantHome>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      '可用功能',
-                      style: TextStyle(
+                    Text(
+                      i18n('app.features'),
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -217,15 +248,15 @@ class _SmartLifeAssistantHomeState extends State<SmartLifeAssistantHome>
                     const SizedBox(height: 16),
                     _buildFeatureCard(
                       icon: Icons.cloud_outlined,
-                      title: '天气查询',
-                      description: '根据经纬度或者城市查询实时天气、逐小时预报和每日预报',
+                      title: i18n('app.weather'),
+                      description: i18n('app.weatherDescription'),
                       color: Colors.blue,
                     ),
                     const SizedBox(height: 12),
                     _buildFeatureCard(
                       icon: Icons.video_library_outlined,
-                      title: 'TikTok视频解析',
-                      description: '从抖音分享链接中提取无水印视频下载地址',
+                      title: i18n('app.tiktok'),
+                      description: i18n('app.tiktokDescription'),
                       color: Colors.pink,
                     ),
                   ],
@@ -237,7 +268,7 @@ class _SmartLifeAssistantHomeState extends State<SmartLifeAssistantHome>
             TextField(
               controller: _inputController,
               decoration: InputDecoration(
-                labelText: '请输入查询内容或分享链接',
+                labelText: i18n('app.inputLabel'),
                 border: const OutlineInputBorder(),
                 suffixIcon:
                     _isLoading
@@ -260,8 +291,8 @@ class _SmartLifeAssistantHomeState extends State<SmartLifeAssistantHome>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          '处理结果',
+                        Text(
+                          i18n('app.resultTitle'),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

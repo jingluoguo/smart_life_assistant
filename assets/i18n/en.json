@@ -1,0 +1,20 @@
+{
+  "menu": {
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "selectAll": "Select All"
+  },
+  "app": {
+    "title": "Smart Life Assistant",
+    "features": "Available Features",
+    "weather": "Weather Query",
+    "weatherDescription": "Query real-time weather, hourly forecast and daily forecast based on latitude and longitude",
+    "tiktok": "TikTok Video Parser",
+    "tiktokDescription": "Extract watermark-free video download links from Douyin share links",
+    "inputLabel": "Please enter query content or share link",
+    "resultTitle": "Processing Result",
+    "loading": "Processing...",
+    "failed": "Processing failed: {error}"
+  }
+}
