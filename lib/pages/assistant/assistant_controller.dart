@@ -3,7 +3,6 @@ import 'dart:core';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
 import 'package:smart_life_assistant/core/utils/common_util.dart';
 import 'package:url_launcher/url_launcher.dart';

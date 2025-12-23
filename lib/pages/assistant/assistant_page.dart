@@ -2,7 +2,6 @@ import 'dart:core';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get/get.dart';
 import 'package:smart_life_assistant/core/utils/common_util.dart';
 import 'package:smart_life_assistant/core/value/colors.dart';
