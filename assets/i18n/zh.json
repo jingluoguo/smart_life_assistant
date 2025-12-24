@@ -15,7 +15,9 @@
     "inputLabel": "请输入查询内容或分享链接",
     "resultTitle": "处理结果",
     "loading": "正在处理...",
-    "failed": "处理失败：{error}"
+    "failed": "处理失败：{error}",
+    "linkCopied": "链接已复制到剪贴板: {url}",
+    "copyFailed": "复制链接失败: {url}"
   },
   "settings": {
       "title": "主题设置",

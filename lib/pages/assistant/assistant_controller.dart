@@ -15,12 +15,23 @@ class AssistantController extends GetxController with WidgetsBindingObserver {
   RxBool isLoading = false.obs;
   RxString result = ''.obs;
 
+  Future<void> copyToClipboard(String url) async {
+    try {
+      await Clipboard.setData(ClipboardData(text: url));
+    } catch (e) {
+      if (kDebugMode) {
+        print('复制失败: $e');
+      }
+    }
+  }
+
   Future<void> handleLaunchUrl(String url) async {
     final Uri uri = Uri.parse(url);
+    copyToClipboard(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      result.value = '无法打开链接: $url';
+      print('无法打开链接: $url');
     }
   }
 

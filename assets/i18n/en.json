@@ -15,7 +15,9 @@
     "inputLabel": "Please enter query content or share link",
     "resultTitle": "Processing Result",
     "loading": "Processing...",
-    "failed": "Processing failed: {error}"
+    "failed": "Processing failed: {error}",
+    "linkCopied": "Link copied to clipboard: {url}",
+    "copyFailed": "Failed to copy link: {url}"
   },
   "settings": {
     "title": "Theme Settings",
